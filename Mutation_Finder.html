@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mutation Finder 🧬</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            background: white;
+            padding: 25px;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            color: #2a3142;
+        }
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccd1d9;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 18px;
+            margin-top: 10px;
+            background-color: #4caf50;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #43a047;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .sequence span {
+            display: inline-block;
+            padding: 2px 4px;
+            margin: 1px;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+        }
+        .sequence span:hover::after {
+            opacity: 1;
+        }
+        .mutation {
+            background-color: #e53935;
+            color: #fff;
+            font-weight: bold;
+        }
+        .mutation::after {
+            content: attr(data-info);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+        .legend {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #f1f1f1;
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: center;
+        }
+        .warning {
+            text-align: center;
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mutation Finder 🧬</h1>
+        <div class="warning">
+            ⚠️ Make sure there are <strong>no empty spaces</strong> in your sequences before submitting.
+        </div>
+        <p style="text-align:center;">Enter <strong>Sequence 1</strong> and <strong>Sequence 2</strong> to identify mutations. Hover over highlighted bases to see the change.</p>
+        <form id="mutationForm">
+            Sequence 1:<br>
+            <input type="text" id="reference" required><br>
+            Sequence 2:<br>
+            <input type="text" id="sample" required><br>
+            <button type="button" onclick="findMutations()">Find Mutations</button>
+        </form>
+        <div id="result"></div>
+        <div class="legend">
+            <strong>Legend:</strong> <span class="mutation">Red</span> = mutation<br>
+            <em>Hover over a highlighted base to see the change.</em>
+        </div>
+    </div>
+
+    <script>
+        function findMutations() {
+            const ref = document.getElementById('reference').value.toUpperCase().trim();
+            const sample = document.getElementById('sample').value.toUpperCase().trim();
+            if (!ref || !sample) return alert("Enter both sequences.");
+
+            const len = Math.max(ref.length, sample.length);
+            let output = "<h3>Sequence 1:</h3><div class='sequence'>";
+            for (let i = 0; i < len; i++) {
+                const r = ref[i] || "-";
+                const s = sample[i] || "-";
+                if (r !== s) {
+                    output += `<span class="mutation" data-info="Position ${i+1}: ${r} → ${s}">${r}</span>`;
+                } else {
+                    output += `<span>${r}</span>`;
+                }
+            }
+            output += "</div>";
+
+            output += "<h3>Sequence 2:</h3><div class='sequence'>";
+            for (let i = 0; i < len; i++) {
+                const r = ref[i] || "-";
+                const s = sample[i] || "-";
+                if (r !== s) {
+                    output += `<span class="mutation" data-info="Position ${i+1}: ${r} → ${s}">${s}</span>`;
+                } else {
+                    output += `<span>${s}</span>`;
+                }
+            }
+            output += "</div>";
+
+            document.getElementById('result').innerHTML = output;
+        }
+    </script>
+</body>
+</html>
