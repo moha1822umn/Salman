@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Punnett HoloGrid — Genotype Only 🛰️</title>
+<style>
+:root{
+  --bg-1: #071025;
+  --bg-2: #081428;
+  --accent: rgba(24,230,255,0.95);
+  --accent2: rgba(170,90,255,0.95);
+  --glass: rgba(255,255,255,0.04);
+  --muted: rgba(255,255,255,0.65);
+  --glass-border: rgba(100,200,255,0.07);
+  --card-blur: 14px;
+  --radius: 14px;
+}
+html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+body{
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(64,150,255,0.06), transparent 6%),
+              radial-gradient(800px 400px at 90% 85%, rgba(200,80,255,0.04), transparent 8%),
+              linear-gradient(180deg,var(--bg-1),var(--bg-2));
+  color:var(--muted);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-y:auto;
+}
+.holo-grid {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(transparent 95%, rgba(120,200,255,0.035) 100%),
+    linear-gradient(90deg, transparent 95%, rgba(120,200,255,0.02) 100%);
+  background-size: 80px 80px, 80px 80px;
+  mix-blend-mode: screen;
+  opacity:0.9;
+  animation: gridShift 18s linear infinite;
+  filter: drop-shadow(0 0 14px rgba(24,230,255,0.02));
+}
+@keyframes gridShift {
+  0% { transform: translate3d(0,0,0) rotate(0.001deg); background-position: 0 0, 0 0; }
+  50% { transform: translate3d(-30px,-18px,0) rotate(0.001deg); background-position: -30px -18px, -30px -18px; }
+  100% { transform: translate3d(0,0,0) rotate(0.001deg); background-position: 0 0, 0 0; }
+}
+.stars {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(255,255,255,0.03) 0, transparent 10%),
+    radial-gradient(circle at 70% 30%, rgba(255,255,255,0.02) 0, transparent 6%),
+    radial-gradient(circle at 85% 80%, rgba(255,255,255,0.015) 0, transparent 6%);
+  background-size: cover;
+  opacity:0.85;
+}
+.wrap {
+  position:relative; z-index:3; max-width:980px; margin:48px auto; padding:28px;
+  border-radius:var(--radius);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 40px rgba(2,8,20,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+  backdrop-filter: blur(var(--card-blur)) saturate(120%);
+  overflow:hidden;
+}
+header{
+  display:flex; align-items:center; gap:16px; margin-bottom:18px;
+}
+.logo {
+  width:64px; height:64px; border-radius:12px;
+  background: linear-gradient(135deg, rgba(24,230,255,0.18), rgba(170,90,255,0.16));
+  border:1px solid rgba(255,255,255,0.06);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--accent); font-weight:700; font-size:20px;
+  box-shadow: 0 6px 30px rgba(24,230,255,0.03), 0 1px 0 rgba(255,255,255,0.02) inset;
+}
+h1{ font-size:20px; color:var(--accent); margin:0; letter-spacing:0.6px; }
+p.sub { margin:0; color:rgba(180,210,255,0.8); font-size:13px; }
+.controls { display:flex; gap:12px; align-items:center; margin:18px 0 8px 0; flex-wrap:wrap; }
+.input { display:flex; gap:8px; align-items:center; background: rgba(255,255,255,0.02); padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); }
+.input input[type="text"]{ background:transparent; border:none; outline:none; color:var(--muted); width:160px; font-size:15px; padding:6px 4px; }
+.btn { appearance:none; border: none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600; letter-spacing:0.3px; font-size:14px;
+      background: linear-gradient(90deg, rgba(24,230,255,0.12), rgba(170,90,255,0.08));
+      color:var(--accent); border:1px solid rgba(24,230,255,0.12); transition: transform .12s ease, box-shadow .12s ease;
+      box-shadow: 0 6px 20px rgba(24,230,255,0.03); }
+.btn:active{ transform:translateY(1px); }
+.board { margin-top:12px; display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap; }
+.p-table { min-width:320px; background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01)); border-radius:10px; padding:12px; border:1px solid rgba(120,200,255,0.04); }
+table.punnett { border-collapse:collapse; margin:auto; color:var(--muted); font-size:13px; }
+table.punnett th, table.punnett td { border: 1px solid rgba(120,200,255,0.06); padding:10px 12px; min-width:78px; text-align:center; position:relative; background: rgba(255,255,255,0.008); backdrop-filter: blur(6px); }
+table.punnett th { font-weight:700; color:rgba(200,225,255,0.95); font-size:13px; letter-spacing:0.4px; background: linear-gradient(180deg, rgba(24,230,255,0.02), rgba(170,90,255,0.015)); }
+.allele-D { color: var(--accent); font-weight:800; font-size:15px; }
+.allele-r { color: var(--accent2); opacity:0.95; font-weight:700; font-size:15px; }
+table.punnett td:hover { transform: translateY(-6px); box-shadow: 0 16px 60px rgba(24,230,255,0.07); z-index:5; }
+.results { flex:1 1 320px; min-width:260px; background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008)); border-radius:12px; padding:12px; border:1px solid rgba(255,255,255,0.03); }
+.results h3{ margin:6px 0 6px 0; color:var(--accent); font-size:14px; }
+.ratio-list { margin:6px 0 0 0; padding:0; list-style:none; color:rgba(190,220,255,0.9); font-size:13px; }
+.ratio-list li{ padding:6px 0; border-bottom:1px dashed rgba(255,255,255,0.02); }
+.holo-tooltip { position:fixed; z-index:9999; pointer-events:none; background: linear-gradient(180deg, rgba(6,20,35,0.9), rgba(10,18,30,0.84)); color: #bfeeff; padding:10px 12px; border-radius:8px; border:1px solid rgba(24,230,255,0.12); box-shadow: 0 10px 40px rgba(12,28,50,0.7); font-size:13px; transform-origin:left top; transition: opacity .09s ease, transform .09s ease; opacity:0; transform: translateY(6px) scale(.98); max-width:320px; line-height:1.25; }
+.holo-tooltip.show { opacity:1; transform: translateY(0) scale(1); }
+.holo-tooltip .pair { display:flex; gap:10px; align-items:center; margin-bottom:6px; }
+.holo-tooltip .pair b { color:#dff9ff; margin-right:8px; min-width:48px; }
+.holo-tooltip .status { font-size:12px; color:rgba(200,230,255,0.8); }
+@media (max-width:720px){
+  .wrap{ margin:18px; padding:16px; }
+  .controls{ flex-direction:column; align-items:stretch; gap:8px; }
+  .board{ flex-direction:column; }
+  table.punnett th, table.punnett td{ min-width:56px; padding:8px; }
+}
+</style>
+</head>
+<body>
+<div class="holo-grid" aria-hidden="true"></div>
+<div class="stars" aria-hidden="true"></div>
+
+<div class="wrap" role="application" aria-label="Punnett HoloGrid">
+  <header>
+    <div class="logo">H O</div>
+    <div>
+      <h1>Punnett HoloGrid</h1>
+      <p class="sub">Genotype-only Punnett square. Hover any cell to inspect allele pairs.</p>
+    </div>
+  </header>
+
+  <div class="controls" role="region" aria-label="Controls">
+    <div class="input" title="Parent 1 genotype (pairs of letters, e.g. AaBb)">
+      <label style="color:var(--muted); font-size:13px;">Parent 1</label>
+      <input id="parent1" type="text" maxlength="24" placeholder="e.g. AaBb" value="AaBb">
+    </div>
+
+    <div class="input" title="Parent 2 genotype">
+      <label style="color:var(--muted); font-size:13px;">Parent 2</label>
+      <input id="parent2" type="text" maxlength="24" placeholder="e.g. AaBb" value="AaBb">
+    </div>
+
+    <button class="btn" id="generateBtn" type="button">Generate</button>
+  </div>
+
+  <div class="board">
+    <div class="p-table" id="pTableContainer" aria-live="polite"></div>
+
+    <aside class="results" id="resultSummary" aria-live="polite">
+      <h3>Genotype Ratios</h3>
+      <ul class="ratio-list" id="genotypeRatios"></ul>
+    </aside>
+  </div>
+</div>
+
+<div id="holoTooltip" class="holo-tooltip" role="tooltip" aria-hidden="true"></div>
+
+<script>
+// generate gametes
+function generateGametes(genotype){
+  const clean = genotype.replace(/\s+/g,'');
+  if(clean.length%2!==0) return [];
+  const genes=[];
+  for(let i=0;i<clean.length;i+=2) genes.push([clean[i],clean[i+1]]);
+  function combine(arr,idx=0,prefix=''){
+    if(idx===arr.length) return [prefix];
+    let out=[];
+    arr[idx].forEach(a=> out.push(...combine(arr,idx+1,prefix+a)));
+    return out;
+  }
+  return combine(genes);
+}
+
+// color genotype letters
+function colorTextGenotype(genotype){
+  let html='';
+  for(let i=0;i<genotype.length;i+=2){
+    for(let j=0;j<2;j++){
+      const allele=genotype[i+j]||'';
+      if(!allele) continue;
+      const cls=(allele===allele.toUpperCase())?'allele-D':'allele-r';
+      html+=`<span class="${cls}" data-allele="${allele}">${allele}</span>`;
+    }
+    if(i+2<genotype.length) html+='<span style="width:6px;display:inline-block"></span>';
+  }
+  return html;
+}
+
+// tooltip
+const tooltip=document.getElementById('holoTooltip'); let tooltipVisible=false;
+function buildTooltipContent(genotype){
+  let html='';
+  for(let i=0;i<genotype.length;i+=2){
+    const a=genotype[i]||'-', b=genotype[i+1]||'-';
+    const dominant=(/[A-Z]/.test(a)||/[A-Z]/.test(b));
+    html+=`<div class="pair"><b>${a}${b}</b><div class="status">${dominant?'Dominant':'Recessive'}</div></div>`;
+  }
+  return html;
+}
+function showTooltipAt(evt,genotype){
+  tooltip.innerHTML=buildTooltipContent(genotype);
+  tooltip.setAttribute('aria-hidden','false'); tooltip.classList.add('show'); tooltipVisible=true;
+  const pad=12;
+  let x=evt.clientX+18, y=evt.clientY+18;
+  const rect=tooltip.getBoundingClientRect();
+  const vw=Math.max(document.documentElement.clientWidth,window.innerWidth||0);
+  const vh=Math.max(document.documentElement.clientHeight,window.innerHeight||0);
+  if(x+rect.width+pad>vw) x=evt.clientX-rect.width-18;
+  if(y+rect.height+pad>vh) y=evt.clientY-rect.height-18;
+  tooltip.style.left=x+'px'; tooltip.style.top=y+'px';
+}
+function hideTooltip(){ tooltip.classList.remove('show'); tooltip.setAttribute('aria-hidden','true'); tooltipVisible=false; }
+
+// Punnett square generation
+function generatePunnettSquare(){
+  const p1=document.getElementById('parent1').value.trim();
+  const p2=document.getElementById('parent2').value.trim();
+  const container=document.getElementById('pTableContainer');
+  const genList=document.getElementById('genotypeRatios');
+
+  if(!p1||!p2){alert('Enter alleles for both parents.');return;}
+  const clean1=p1.replace(/\s+/g,''), clean2=p2.replace(/\s+/g,'');
+  if(clean1.length%2!==0||clean2.length%2!==0){alert('Each gene must have exactly two alleles (pairs).');return;}
+  if(clean1.length!==clean2.length){alert('Both parents must have the same number of genes.');return;}
+
+  const gametes1=generateGametes(clean1);
+  const gametes2=generateGametes(clean2);
+  if(gametes1.length===0||gametes2.length===0){alert('Unable to generate gametes from input.');return;}
+
+  // build table
+  let html='<table class="punnett" role="table" aria-label="Punnett square"><thead><tr><th></th>';
+  gametes2.forEach(g=> html+=`<th>${colorTextGenotype(g)}</th>`); html+='</tr></thead><tbody>';
+
+  const genotypeCounts={};
+  gametes1.forEach(g1=>{
+    html+=`<tr><th>${colorTextGenotype(g1)}</th>`;
+    gametes2.forEach(g2=>{
+      let genotype='';
+      for(let i=0;i<g1.length;i++){ genotype+=g1[i]+g2[i]; }
+      genotypeCounts[genotype]=(genotypeCounts[genotype]||0)+1;
+      html+=`<td data-genotype="${genotype}" class="genotype">${colorTextGenotype(genotype)}</td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  container.innerHTML=html;
+
+  // update ratios with total
+  genList.innerHTML=''; const total=Object.values(genotypeCounts).reduce((a,b)=>a+b,0);
+  Object.entries(genotypeCounts).forEach(([gen,count])=>{
+    genList.innerHTML+=`<li><b>${gen}</b> : ${count}/${total}</li>`;
+  });
+
+  // tooltip events
+  const cells=container.querySelectorAll('td[data-genotype]');
+  cells.forEach(cell=>{
+    cell.onmouseenter=e=>showTooltipAt(e,cell.dataset.genotype);
+    cell.onmousemove=e=>{ if(tooltipVisible) showTooltipAt(e,cell.dataset.genotype); };
+    cell.onmouseleave=hideTooltip;
+  });
+}
+
+document.getElementById('generateBtn').addEventListener('click',generatePunnettSquare);
+document.getElementById('parent1').addEventListener('keypress',e=>{if(e.key==='Enter') generatePunnettSquare();});
+document.getElementById('parent2').addEventListener('keypress',e=>{if(e.key==='Enter') generatePunnettSquare();});
+generatePunnettSquare();
+
+window.addEventListener('scroll',()=>{
+  if(tooltipVisible) hideTooltip();
+});
+</script>
+</body>
+</html>
